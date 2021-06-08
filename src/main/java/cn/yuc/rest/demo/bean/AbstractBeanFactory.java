@@ -1,11 +1,13 @@
 package cn.yuc.rest.demo.bean;
 
+import cn.yuc.rest.demo.annotation.Autowire;
+import cn.yuc.rest.demo.bean.impl.DefaultClassScanner;
 import cn.yuc.rest.demo.conf.ConfigEnum;
 import cn.yuc.rest.demo.conf.ConfigLoader;
 import cn.yuc.rest.demo.conf.ProjectConfig;
-import cn.yuc.rest.demo.bean.impl.DefaultClassScanner;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,10 +20,11 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public abstract class AbstractBeanFactory implements BeanFactory{
 
-    protected Map<String,Class> beanNameToClassMap = new ConcurrentHashMap<>(64);
+    protected Map<String,Class<?>> beanNameToClassMap = new ConcurrentHashMap<>(64);
 
     /** 使用 ConcurrentHashMap 时，value 不能为空 */
-    protected Map<Class,Object> singletonBeanMap = new ConcurrentHashMap<>(64);
+    protected Map<Class<?>,Object> singletonBeanMap = new ConcurrentHashMap<>(64);
+
 
     public AbstractBeanFactory() throws ClassNotFoundException {
         ClassScanner cs = new DefaultClassScanner();
@@ -52,10 +55,22 @@ public abstract class AbstractBeanFactory implements BeanFactory{
             return bean;
         }
         try {
+            // 实例化
             Constructor<T> constructor = clazz.getDeclaredConstructor();
             constructor.setAccessible(true);
             bean = constructor.newInstance();
             singletonBeanMap.put(clazz,bean);
+            // 依赖注入
+            for(Field field : clazz.getDeclaredFields()) {
+                if(field.isAnnotationPresent(Autowire.class)) {
+                    field.setAccessible(true);
+                    Class<?> type = field.getType();
+                    field.set(
+                            bean,
+                            singletonBeanMap.containsKey(type) ? singletonBeanMap.get(type) : getBean(type)
+                    );
+                }
+            }
         } catch (NoSuchMethodException e) {
             System.out.println("Bean must have no-parameter constructor!");
             e.printStackTrace();
@@ -64,4 +79,6 @@ public abstract class AbstractBeanFactory implements BeanFactory{
         }
         return bean;
     }
+
+
 }
