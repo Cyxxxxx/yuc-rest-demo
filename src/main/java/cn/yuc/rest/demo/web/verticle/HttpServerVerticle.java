@@ -24,7 +24,7 @@ import java.util.Map;
  */
 public class HttpServerVerticle extends AbstractVerticle {
 
-    public Object paramsToJavaObject(MultiMap params, Class clazz) {
+    public Object paramsToJavaObject(MultiMap params, Class<?> clazz) {
         Map<String, Object> map = new HashMap<>();
         for(Map.Entry<String,String> entry : params.entries()) {
             map.put(entry.getKey(),entry.getValue());
@@ -55,7 +55,7 @@ public class HttpServerVerticle extends AbstractVerticle {
         router.route(routeData.getHttpMethod(), routeData.getUri())
                 .handler(routingContext -> {
                     HttpServerRequest request = routingContext.request();
-                    Class clazz = routeData.getParamType();
+                    Class<?> clazz = routeData.getParamType();
                     Object paramJavaObject =  this.paramsToJavaObject(request.params(),clazz);
                     Object result = routeData.getHandler().apply(paramJavaObject);
                     // res

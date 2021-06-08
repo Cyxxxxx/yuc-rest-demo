@@ -1,10 +1,10 @@
 package cn.yuc.rest.demo.bean.impl;
 
 import cn.yuc.rest.demo.Application;
+import cn.yuc.rest.demo.bean.ClassScanner;
 import cn.yuc.rest.demo.conf.ConfigEnum;
 import cn.yuc.rest.demo.conf.ConfigLoader;
 import cn.yuc.rest.demo.conf.ProjectConfig;
-import cn.yuc.rest.demo.bean.ClassScanner;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -32,10 +32,10 @@ public class DefaultClassScanner implements ClassScanner {
      * @param basePackagePath
      * @throws ClassNotFoundException
      */
-    void findClasses(File file, List<Class> classList, String basePackagePath) throws ClassNotFoundException {
+    void findClasses(File file, List<Class<?>> classList, String basePackagePath) throws ClassNotFoundException {
         Objects.requireNonNull(file);
         if (file.isDirectory()) {
-            for (File subFile : file.listFiles()) {
+            for (File subFile : Objects.requireNonNull(file.listFiles())) {
                 findClasses(subFile, classList, basePackagePath);
             }
             return;
@@ -52,8 +52,8 @@ public class DefaultClassScanner implements ClassScanner {
 
 
     @Override
-    public List<Class> collectClasses(List<String> packageNames) throws ClassNotFoundException {
-        List<Class> result = new ArrayList<>();
+    public List<Class<?>> collectClasses(List<String> packageNames) throws ClassNotFoundException {
+        List<Class<?>> result = new ArrayList<>();
         for (String packageName : packageNames) {
             String packagePath = packageName.replace(".", File.separator);
             findClasses(new File(getProjectRootPath()), result, packagePath);

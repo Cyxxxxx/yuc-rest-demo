@@ -7,13 +7,15 @@ import io.vertx.core.http.HttpMethod;
 
 public class TestController extends UdrController {
 
-
-    public Route twoSum() {
+    public Route<?> twoSum() {
         return of(
                 "/sum",
                 HttpMethod.GET,
+                // 入参类型
                 BeanTest.class,
+                // 业务处理函数
                 param -> param.getA() + param.getB()
         );
     }
+
 }

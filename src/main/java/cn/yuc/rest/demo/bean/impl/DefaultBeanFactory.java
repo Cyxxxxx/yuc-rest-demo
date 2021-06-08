@@ -1,8 +1,8 @@
 package cn.yuc.rest.demo.bean.impl;
 
+import cn.yuc.rest.demo.bean.AbstractBeanFactory;
 import cn.yuc.rest.demo.conf.ConfigEnum;
 import cn.yuc.rest.demo.conf.ProjectConfig;
-import cn.yuc.rest.demo.bean.AbstractBeanFactory;
 
 /**
  * 默认Bean工厂
@@ -18,7 +18,7 @@ public class DefaultBeanFactory extends AbstractBeanFactory {
 
     @Override
     protected void setBeanNameToClassMap() {
-        ProjectConfig.getList(ConfigEnum.CLASS_LIST,Class.class)
+        ProjectConfig.<Class<?>>getList(ConfigEnum.CLASS_LIST)
                 .forEach(clazz -> beanNameToClassMap.put(clazz.getSimpleName(),clazz));
     }
 

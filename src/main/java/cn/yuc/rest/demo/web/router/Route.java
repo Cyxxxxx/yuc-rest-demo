@@ -3,7 +3,6 @@ package cn.yuc.rest.demo.web.router;
 import cn.yuc.rest.demo.web.result.ResultUtil;
 import io.vertx.core.http.HttpMethod;
 
-import java.lang.reflect.ParameterizedType;
 import java.util.function.Function;
 
 /**
@@ -17,15 +16,12 @@ public class Route<T> {
     private Class<T> paramType;
     private Function<T, ResultUtil.Result> handler;
 
-    public Class<T> getTClass() {
-        return (Class<T>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
-    }
 
     public Route(String uri, HttpMethod httpMethod, Class<T> paramType, Function<T, Object> handler) {
         this.uri = uri;
         this.httpMethod = httpMethod;
         this.paramType = paramType;
-        this.handler = handler.andThen(obj -> ResultUtil.ok(obj));
+        this.handler = handler.andThen(ResultUtil::ok);
     }
 
 
