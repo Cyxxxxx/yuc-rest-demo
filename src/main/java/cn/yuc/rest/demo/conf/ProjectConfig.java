@@ -49,8 +49,14 @@ public class ProjectConfig {
         return Integer.parseInt(getString(key));
     }
 
-    public static <T>List <T>getList(ConfigEnum key,Class<T> clazz) {
+    public static <T>List <T>getList(ConfigEnum key) {
         Object value = get(key);
         return (List<T>) value;
     }
+
+    public static <K,V> Map<K,V> getMap(ConfigEnum key){
+        Object value = get(key);
+        return (Map<K, V>) value;
+    }
+
 }

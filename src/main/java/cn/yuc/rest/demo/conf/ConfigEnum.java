@@ -16,4 +16,7 @@ public enum ConfigEnum {
 
     // 类列表
     CLASS_LIST,
+
+    // 路由表
+    ROUTE_MAP,
 }

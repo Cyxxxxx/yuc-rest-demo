@@ -1,8 +1,11 @@
 package cn.yuc.rest.demo.web.router;
 
-import java.util.ArrayList;
-import java.util.List;
+import cn.yuc.rest.demo.conf.ConfigEnum;
+import cn.yuc.rest.demo.conf.ProjectConfig;
+
+import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
 /**
@@ -10,7 +13,11 @@ import java.util.function.Consumer;
  * @author YuC
  */
 public abstract class AbstractRoutes {
-    protected static List<Route> routeList;
+    protected static Map<String,Route> routeMap;
+
+    public AbstractRoutes() {
+        load();
+    }
 
     /**
      * 路由的加载方法
@@ -18,8 +25,9 @@ public abstract class AbstractRoutes {
      * @throws NoSuchMethodException
      */
     public void load() {
-        if(routeList == null) {
-            routeList = new ArrayList<>();
+        if(routeMap == null) {
+            routeMap = new ConcurrentHashMap<>(64);
+            ProjectConfig.getInstance().put(ConfigEnum.ROUTE_MAP,routeMap);
         }
     }
 
@@ -32,7 +40,7 @@ public abstract class AbstractRoutes {
      */
     public final void foreach(Consumer<Route> action) {
         Objects.requireNonNull(action);
-        for (Route router : routeList) {
+        for (Route router : routeMap.values()) {
             action.accept(router);
         }
     }

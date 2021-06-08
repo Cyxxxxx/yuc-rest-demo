@@ -2,8 +2,13 @@ package cn.yuc.rest.demo;
 
 import cn.yuc.rest.demo.bean.BeanFactory;
 import cn.yuc.rest.demo.bean.impl.DefaultBeanFactory;
+import cn.yuc.rest.demo.conf.ConfigEnum;
+import cn.yuc.rest.demo.conf.ProjectConfig;
+import cn.yuc.rest.demo.web.router.Route;
 import cn.yuc.rest.demo.web.router.impl.UserDefineRoutes;
 import cn.yuc.rest.demo.web.verticle.HttpServerVerticle;
+
+import java.util.Map;
 
 public class Application {
 
@@ -25,6 +30,8 @@ public class Application {
 
     public static void run() {
         userDefineRoutes.getAllRoutes();
+        Map<String, Route> routeMap = ProjectConfig.getMap(ConfigEnum.ROUTE_MAP);
+        System.out.println(routeMap.get("/sum").toString());
         HttpServerVerticle.run();
     }
 

@@ -16,9 +16,6 @@ public class UserDefineRoutes extends AbstractRoutes {
 
     public UserDefineRoutes() {
         super();
-        super.load();
-//        ProjectConfig.getList(ConfigEnum.UDR_CLASS_LIST,Class.class)
-//                .add(this.getClass());
     }
 
     /**
@@ -27,8 +24,8 @@ public class UserDefineRoutes extends AbstractRoutes {
      * @param route
      * @return
      */
-    public void addRoute(Route route) {
-        routeList.add(route);
+    public void addRoute(String uri, Route route) {
+        routeMap.put(uri, route);
     }
 
     /**
@@ -55,7 +52,7 @@ public class UserDefineRoutes extends AbstractRoutes {
      * 获取所有路由
      */
     public void getAllRoutes() {
-        List<Class> classList = ProjectConfig.getList(ConfigEnum.CLASS_LIST, Class.class);
+        List<Class> classList = ProjectConfig.getList(ConfigEnum.CLASS_LIST);
         classList.forEach(clazz -> {
             if(!UdrController.class.isAssignableFrom(clazz) || UdrController.class.equals(clazz)) return;
             try {
@@ -68,7 +65,7 @@ public class UserDefineRoutes extends AbstractRoutes {
                             method.setAccessible(true);
                             try {
                                 Route route = (Route) method.invoke(udrController);
-                                this.addRoute(route);
+                                this.addRoute(route.getUri(), route);
                             } catch (IllegalAccessException | InvocationTargetException e) {
                                 e.printStackTrace();
                             }
