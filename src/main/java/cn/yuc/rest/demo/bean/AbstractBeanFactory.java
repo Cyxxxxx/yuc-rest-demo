@@ -8,7 +8,6 @@ import cn.yuc.rest.demo.conf.ProjectConfig;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -43,39 +42,33 @@ public abstract class AbstractBeanFactory implements BeanFactory{
     protected void setBeanNameToClassMap() {}
 
     @Override
-    public Object getBean(String beanName) {
+    public Object getBean(String beanName) throws Exception {
         return getBean(beanNameToClassMap.get(beanName));
     }
 
     @Override
-    public <T>T getBean(Class<T> clazz) {
+    public <T>T getBean(Class<T> clazz) throws Exception{
         Objects.requireNonNull(clazz);
+        // 从缓存中获取 Bean
         T bean = (T) singletonBeanMap.get(clazz);
         if (bean!=null) {
             return bean;
         }
-        try {
-            // 实例化
-            Constructor<T> constructor = clazz.getDeclaredConstructor();
-            constructor.setAccessible(true);
-            bean = constructor.newInstance();
-            singletonBeanMap.put(clazz,bean);
-            // 依赖注入
-            for(Field field : clazz.getDeclaredFields()) {
-                if(field.isAnnotationPresent(Autowire.class)) {
-                    field.setAccessible(true);
-                    Class<?> type = field.getType();
-                    field.set(
-                            bean,
-                            singletonBeanMap.containsKey(type) ? singletonBeanMap.get(type) : getBean(type)
-                    );
-                }
+        // 若缓存中不存在该Bean，进行实例化
+        Constructor<T> constructor = clazz.getDeclaredConstructor();
+        constructor.setAccessible(true);
+        bean = constructor.newInstance();
+        singletonBeanMap.put(clazz,bean);
+        // 依赖注入
+        for(Field field : clazz.getDeclaredFields()) {
+            if(field.isAnnotationPresent(Autowire.class)) {
+                field.setAccessible(true);
+                Class<?> type = field.getType();
+                field.set(
+                        bean,
+                        singletonBeanMap.containsKey(type) ? singletonBeanMap.get(type) : getBean(type)
+                );
             }
-        } catch (NoSuchMethodException e) {
-            System.out.println("Bean must have no-parameter constructor!");
-            e.printStackTrace();
-        } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
-            e.printStackTrace();
         }
         return bean;
     }

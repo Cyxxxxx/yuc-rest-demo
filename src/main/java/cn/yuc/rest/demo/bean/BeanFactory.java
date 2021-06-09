@@ -11,13 +11,13 @@ public interface BeanFactory {
      * @param beanName
      * @return
      */
-    Object getBean(String beanName);
+    Object getBean(String beanName) throws Exception;
 
     /**
      * 由Class获取Bean
      * @param clazz
      * @return
      */
-    <T>T getBean(Class<T> clazz);
+    <T>T getBean(Class<T> clazz) throws Exception;
 
 }

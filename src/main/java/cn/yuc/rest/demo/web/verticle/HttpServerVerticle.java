@@ -73,19 +73,14 @@ public class HttpServerVerticle extends AbstractVerticle {
                 .setWorkerPoolSize(2)
                 .setWorkerPoolName("vertx-thread-pool");
 
-        vertx.deployVerticle(HttpServerVerticle.class, deploymentOptions, asyncResult ->
-        {
+        vertx.deployVerticle(HttpServerVerticle.class, deploymentOptions, asyncResult -> {
             if (asyncResult.failed()) {
                 asyncResult.cause().printStackTrace();
                 System.out.println("Start server failed!");
             } else {
-                System.out.println("Start server success123!");
+                System.out.println("Start server success!");
             }
         });
-    }
-
-    public static void main(String[] args) {
-        run();
     }
 
 }

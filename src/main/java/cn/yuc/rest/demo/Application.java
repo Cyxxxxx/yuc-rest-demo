@@ -19,7 +19,7 @@ public class Application {
         try {
             beanFactory = new DefaultBeanFactory();
             userDefineRoutes = beanFactory.getBean(UserDefineRoutes.class);
-        } catch (ClassNotFoundException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
