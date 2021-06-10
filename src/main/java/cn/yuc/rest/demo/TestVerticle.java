@@ -1,6 +1,6 @@
 package cn.yuc.rest.demo;
 
-import com.alibaba.fastjson.JSON;
+import cn.yuc.rest.demo.web.verticle.HttpServerVerticle;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.MultiMap;
@@ -9,18 +9,7 @@ import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.ext.web.Router;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public class TestVerticle extends AbstractVerticle {
-
-    public Object paramsToJavaObject(MultiMap params, Class clazz) {
-        Map<String, Object> map = new HashMap<>();
-        for(Map.Entry<String,String> entry : params.entries()) {
-            map.put(entry.getKey(),entry.getValue());
-        }
-        return JSON.parseObject(JSON.toJSONString(map),clazz);
-    }
 
     @Override
     public void start() throws Exception {
@@ -30,7 +19,7 @@ public class TestVerticle extends AbstractVerticle {
                     .handler(routingContext -> {
                         HttpServerRequest request = routingContext.request();
                         MultiMap params = request.params();
-                        Object bt =  this.paramsToJavaObject(params,BeanTest.class);
+                        Object bt =  HttpServerVerticle.paramsToJavaObject(params,BeanTest.class);
                         System.out.println(bt);
                         HttpServerResponse response = routingContext.response();
                         // res

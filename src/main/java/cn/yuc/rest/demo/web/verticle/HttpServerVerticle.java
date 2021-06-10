@@ -5,17 +5,17 @@ import cn.yuc.rest.demo.conf.ConfigEnum;
 import cn.yuc.rest.demo.conf.ProjectConfig;
 import cn.yuc.rest.demo.web.router.Route;
 import cn.yuc.rest.demo.web.router.impl.UserDefineRoutes;
-import com.alibaba.fastjson.JSON;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.MultiMap;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpServerResponse;
+import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Router;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * HTTP服务
@@ -24,12 +24,13 @@ import java.util.Map;
  */
 public class HttpServerVerticle extends AbstractVerticle {
 
-    public Object paramsToJavaObject(MultiMap params, Class<?> clazz) {
-        Map<String, Object> map = new HashMap<>();
+    public static <T> T paramsToJavaObject(MultiMap params, Class<T> clazz) {
+        Objects.requireNonNull(params);
+        JsonObject jsonObject = new JsonObject();
         for(Map.Entry<String,String> entry : params.entries()) {
-            map.put(entry.getKey(),entry.getValue());
+            jsonObject.put(entry.getKey(),entry.getValue());
         }
-        return JSON.parseObject(JSON.toJSONString(map),clazz);
+        return jsonObject.mapTo(clazz);
     }
 
     @Override
@@ -56,7 +57,7 @@ public class HttpServerVerticle extends AbstractVerticle {
                 .handler(routingContext -> {
                     HttpServerRequest request = routingContext.request();
                     Class<?> clazz = routeData.getParamType();
-                    Object paramJavaObject =  this.paramsToJavaObject(request.params(),clazz);
+                    Object paramJavaObject =  paramsToJavaObject(request.params(),clazz);
                     Object result = routeData.getHandler().apply(paramJavaObject);
                     // res
                     HttpServerResponse response = routingContext.response();
