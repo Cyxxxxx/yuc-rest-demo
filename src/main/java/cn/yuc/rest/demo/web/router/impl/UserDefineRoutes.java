@@ -7,10 +7,7 @@ import cn.yuc.rest.demo.web.UdrController;
 import cn.yuc.rest.demo.web.router.AbstractRoutes;
 import cn.yuc.rest.demo.web.router.Route;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.List;
 
 public class UserDefineRoutes extends AbstractRoutes {
@@ -29,26 +26,6 @@ public class UserDefineRoutes extends AbstractRoutes {
         routeMap.put(uri, route);
     }
 
-    /**
-     * 获取所有继承UDR类的对象
-     *
-     * @return
-     */
-    public List<UserDefineRoutes> getAllSubBean(List<Class> classList) {
-        List<UserDefineRoutes> udrList = new ArrayList<>();
-        classList.forEach(clazz -> {
-            if (!this.getClass().isAssignableFrom(clazz) || this.getClass().equals(clazz)) return;
-            try {
-                Constructor<UserDefineRoutes> constructor = clazz.getDeclaredConstructor();
-                constructor.setAccessible(true);
-                UserDefineRoutes udr = constructor.newInstance();
-                udrList.add(udr);
-            } catch (NoSuchMethodException | IllegalAccessException | InstantiationException | InvocationTargetException e) {
-                e.printStackTrace();
-            }
-        });
-        return udrList;
-    }
 
     /**
      * 获取所有路由

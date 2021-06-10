@@ -22,7 +22,6 @@ public abstract class AbstractRoutes {
     /**
      * 路由的加载方法
      *
-     * @throws NoSuchMethodException
      */
     public void load() {
         if(routeMap == null) {
