@@ -24,11 +24,19 @@ import java.util.Objects;
  */
 public class HttpServerVerticle extends AbstractVerticle {
 
+    /**
+     * 入参转Java对象
+     *
+     * @param params 入参
+     * @param clazz  类对象
+     * @param <T>    对象类型
+     * @return 返回转化好的Java对象
+     */
     public static <T> T paramsToJavaObject(MultiMap params, Class<T> clazz) {
         Objects.requireNonNull(params);
         JsonObject jsonObject = new JsonObject();
-        for(Map.Entry<String,String> entry : params.entries()) {
-            jsonObject.put(entry.getKey(),entry.getValue());
+        for (Map.Entry<String, String> entry : params.entries()) {
+            jsonObject.put(entry.getKey(), entry.getValue());
         }
         return jsonObject.mapTo(clazz);
     }
@@ -43,13 +51,8 @@ public class HttpServerVerticle extends AbstractVerticle {
                 .listen(
                         // 端口号监听
                         ProjectConfig.getInt(ConfigEnum.SERVER_PORT),
-                        res -> {
-                            if (res.succeeded()) {
-                                System.out.println("succeed!");
-                            } else {
-                                System.out.println("err!");
-                            }
-                        });
+                        res -> System.out.println(res.succeeded()?"succeed!":"error!")
+                );
     }
 
     private void bindRoute(Router router, Route routeData) {
@@ -57,7 +60,7 @@ public class HttpServerVerticle extends AbstractVerticle {
                 .handler(routingContext -> {
                     HttpServerRequest request = routingContext.request();
                     Class<?> clazz = routeData.getParamType();
-                    Object paramJavaObject =  paramsToJavaObject(request.params(),clazz);
+                    Object paramJavaObject = paramsToJavaObject(request.params(), clazz);
                     Object result = routeData.getHandler().apply(paramJavaObject);
                     // res
                     HttpServerResponse response = routingContext.response();
